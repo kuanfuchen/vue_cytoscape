@@ -1,20 +1,19 @@
 <template>
-  <div>
-    <h3>
+  <div class="body">
+    <h3 class="q-ml-xl">
       {{ cytoName }}
     </h3>
     <div >
-      <div class="row">
-        <div class="col">
-          <div id="cy" style="width:80vw;height: 85vh;"></div>
+      <div class="row" >
+        <div class="col-10">
+          <div id="cy"  ></div>
+          <!-- style="width:100%;height: 90%;" -->
         </div>
-        <div class="selectSideBar" style="width:300px">
+        <div class="col-2 selectSideBar" style="width:300px">
           <div class="q-py-md q-pr-sm">
             <q-card dark bordered class="bg-grey-9 my-card">
               <q-card-section>
                 <div class="text-h6">Select information</div>
-                <!-- <div class="text-subtitle2">by John Doe</div>
-                <div class="text-subtitle2">by John Doe</div> -->
                 <q-select outlined v-model="selectedValue" 
                 bg-color="white" class="q-mt-md" 
                 :options="selectOption" label="Select" ></q-select>
@@ -76,25 +75,10 @@
       </div>
     </div>
   </div>
-  <!-- <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-    <q-btn color="primary" label="Primary" />
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header> -->
-
-  <!-- <RouterView /> -->
 </template>
 <script setup>
 // import { RouterLink, RouterView } from 'vue-router';
-// import HelloWorld from './components/HelloWorld.vue';
-import {ref, watch, reactive, onMounted} from 'vue';
+import {ref, watch,  onMounted} from 'vue';
 import CyNewJSON from './josnlist/RtoCytNew.json';
 const cytoName = ref('')
 const selectOption = ref(['Phylum','Class','Order','Family','Genus','Species']);
@@ -132,12 +116,9 @@ const cytoscapePlotFn = ()=>{
   extendTextInfo.value = true;
   allInfoSort.value = [];
   groupSort.value = [];
-  // console.log(CyNewJSON,'CyNewJSON');
   cytoName.value = CyNewJSON.data.name;
   const dataArrNodes = CyNewJSON.elements.nodes;
   const dataArrEdges = CyNewJSON.elements.edges;
-  console.log(dataArrNodes, 'dataArrNodes')
-  console.log(dataArrEdges,'dataArrEdges')
   let edgesInteraction = [];
   for(let i = 0;dataArrEdges.length>i;i++){
     if(!edgesInteraction[dataArrEdges[i].data.interaction]){
@@ -164,7 +145,6 @@ const cytoscapePlotFn = ()=>{
     if(!dataArrNodes[i].data['parent']){
       dataArrNodes[i].data['parent'] = dataArrNodes[i].data[groupSelectedVal.value];
     }
-    console.log(dataArrNodes[i].data['parent'])
   }
     let dataParent = [];
     for(let i=0;dataArrNodes.length>i;i++){
@@ -173,7 +153,6 @@ const cytoscapePlotFn = ()=>{
         dataParent.push(dataArrNodes[i].data[groupSelectedVal.value])
       }
     }      
-    console.log(dataParent);
     if(groupSelectedVal.value !== 'None'){
       for(let i=0;dataParent.length>i;i++){
         if(dataParent[i] !== 'uncluster'){
@@ -461,6 +440,12 @@ const cytoscapePlotFn = ()=>{
       // );
     // }
 }
+watch(selectedValue,()=>{
+  cytoscapePlotFn()
+})
+watch(groupSelectedVal,()=>{
+  cytoscapePlotFn()
+})
 onMounted(async()=>{
   await cytoscapePlotFn()
 })
@@ -468,65 +453,35 @@ onMounted(async()=>{
   
 </script>
 <style scoped>
-/* header {
-  line-height: 1.5;
-  max-height: 100vh;
+.body{
+  overflow-x: hidden;
+  overflow-y: hidden;
+  width: 100vw; 
+  height: 100vh;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
+#cy {
   width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+  height: 80%;
+  position: absolute;
+  left: 0;
+  top: 50;
+  z-index: 999;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+h1 {
+  opacity: 0.5;
+  font-size: 1em;
 }
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+.selectSideBar{
+  z-index: 1000;
 }
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+.selectCub{
+  width: 6px;
+  margin-right: 5px;
 }
-
-nav a:first-of-type {
-  border: 0;
+.sideBarText{
+  overflow-y: auto;
+  max-height:calc(77vh - 230px)
 }
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-} */
 </style>
